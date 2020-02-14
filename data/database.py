@@ -6,15 +6,19 @@ Created on Sun Dec 29 00:36:47 2019
 """
 import numpy as np
 import pandas as pd
-from utils import load_csv, one_hot_encode, dataframe_to_dict
+from utils import load_csv, one_hot_encode, dataframe_to_dict, tournament
 
 
 class Database:
     
     def __init__(self):
         
-        self.training_data = load_csv("train")
-        self.validation_data = load_csv("validation")
+        self.tournament = tournament()
+        self.last_tournament = np.max(self.tournament)
+        self.training_data = load_csv(tournament=self.last_tournament,
+                                      data_type="train")
+        self.validation_data = load_csv(tournament=self.last_tournament,
+                                        data_type="validation")
         self.__find_features_name__()
         self.__find_era__()
         self.__find_id__()

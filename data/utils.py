@@ -9,7 +9,19 @@ import pandas as pd
 import os
 import numpy as np
 
-def load_csv(data_type="train"):
+
+def tournament():
+    path = Path('__file__').parent.absolute()
+    tournaments = []
+    for file in os.listdir(path):
+        if "numerai_dataset" in file:
+            tournaments.append(int(file.split('_')[-1]))
+            
+    return tournaments
+    
+    
+    
+def load_csv(tournament, data_type="train"):
     if data_type not in ["train", "validation", "live"]:
         raise Exception("Expected data_type equal to train or validation or live, not {}".format(data_type))
     if data_type=="train":
@@ -18,7 +30,7 @@ def load_csv(data_type="train"):
         filename = "numerai_tournament_data.csv"
         
     file = os.path.join(Path('__file__').parent.absolute(),
-                        "csv",
+                        "numerai_dataset_{}".format(tournament),
                         filename)
     
     data = pd.read_csv(file)
@@ -46,3 +58,17 @@ def dataframe_to_dict(data):
     for key in data.keys():
         result[key] = np.array(data[key])
     return result
+
+
+def accuracy(output, label):
+    if type(output)!=np.ndarray:
+        output = np.array(output)
+    if len(output)>1:
+        output = output.squeeze()
+    if type(label)!=np.ndarray:
+        label = np.array(label)
+    if len(label)>1:
+        label = label.squeeze()
+    return {"overall": (np.sum(output==label)/label.shape[0]),
+            "class_0": (np.sum((output==label)*(label==0))/np.sum(label==0)),
+            "class_1": (np.sum((output==label)*(label==1))/np.sum(label==1))}

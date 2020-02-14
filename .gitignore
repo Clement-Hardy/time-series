@@ -1,2 +1,10 @@
 
 data/csv/
+
+data/__pycache__/
+
+data/numerai_dataset_198/numerai_tournament_data.csv
+
+*.csv
+
+training/__pycache__/
