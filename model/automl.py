@@ -21,11 +21,12 @@ class Auto_ML:
     def __init__(self):
         h2o.init()
         self.model = H2OAutoML(max_models = 10000,
-                               max_runtime_secs=900,
+                               max_runtime_secs=120,
+                               max_runtime_secs_per_model=20,
                                seed = 1)
         
         
-    def fit(self, X, y, proportion_val=0.2):
+    def fit(self, X, y, proportion_val=0):
         if proportion_val>0:
             X_train, X_test, y_train, y_test = train_test_split(X,
                                                                 y,
@@ -59,5 +60,5 @@ class Auto_ML:
         if type(X)==np.array:
             X = h2o.H2OFrame(X)
         y = self.model.predict(test_data=X).as_data_frame()
-        y = (y<1.5)*(y>0.5)*1 + (y<2.5)*(y>1.5)*2 + (y<3.5)*(y>2.5)*3 + (y>3.5)*4
+        #y = (y<1.5)*(y>0.5)*1 + (y<2.5)*(y>1.5)*2 + (y<3.5)*(y>2.5)*3 + (y>3.5)*4
         return y
