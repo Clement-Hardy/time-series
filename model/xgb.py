@@ -14,10 +14,10 @@ class model_xgb:
     
     def __init__(self):
         
-        self.model = xgb.XGBClassifier(max_depth=5,
-                                       n_estimators=100,
+        self.model = xgb.XGBClassifier(n_estimators=500,
+                                       max_depth=15,
                                        n_jobs=-1,
-                                       silent=False)
+                                       silent=True)
         
         
     def fit(self, X_train, y_train):
