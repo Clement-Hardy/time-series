@@ -14,7 +14,7 @@ if __name__ == '__main__':
     if not os.path.isdir(os.path.join("data", "numerai_dataset_{}".format(tournament))):
         napi.download_current_dataset(dest_path="data",
                                       unzip=True)
-    if os.path.isdir(os.path.join("data", "numerai_dataset_{}.zip".format(tournament))):
+    if os.path.isfile(os.path.join("data", "numerai_dataset_{}.zip".format(tournament))):
         os.remove(os.path.join("data", "numerai_dataset_{}.zip".format(tournament)))
     
     for file in os.listdir(os.path.join("data", "numerai_dataset_{}".format(tournament))):
