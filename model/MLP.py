@@ -195,7 +195,7 @@ class mlp(model):
 
 class ensemble_mlp(model):
     
-    def __init__(self, nb_model=3):
+    def __init__(self, nb_model=300):
         
         self.models = []
         for i in range(nb_model):
@@ -206,6 +206,21 @@ class ensemble_mlp(model):
                          features=False)
         
     def fit(self, X_train, y_train, X_test=None, y_test=None):
+        if type(X_train)!=np.array:
+            X_train = np.array(X_train)
+        if type(y_train)!=np.array:
+            y_train = np.array(y_train)
+        if type(X_test)!=np.array:
+            X_test = np.array(X_test)
+        if type(y_test)!=np.array:
+            y_test = np.array(y_test)
+        
+        if len(y_train.shape)>1:
+            y_train = y_train[:,0]
+        if len(y_test.shape)>1:
+            y_test = y_test[:,0]
+            
+            
         for model in tqdm(self.models):
             model.fit(X_train=X_train,
                       y_train=y_train,
