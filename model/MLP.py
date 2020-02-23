@@ -5,18 +5,13 @@ Created on Fri Feb 14 20:45:35 2020
 @author: Hard Med lenovo
 """
 from sklearn.neural_network import MLPClassifier
+from pathlib import Path
 
-
-
-# -*- coding: utf-8 -*-
-"""
-Created on Fri Feb 14 20:36:42 2020
-
-@author: Hard Med lenovo
-"""
 import numpy as np
 from sklearn.model_selection import train_test_split, GridSearchCV, KFold, cross_val_score
 import sys
+import os
+import joblib
 from tqdm import tqdm
 sys.path.append("..//training")
 from metric import accuracy_sklearn
@@ -176,7 +171,14 @@ class model:
         return {"best_params": best_params,
                 "best_scores": result["best_scores"]}
 
-
+    
+    def save_model(self):
+        try:
+            filename = os.path.join(Path('__file__').parent.absolute(), "save_models", self.name_model+".sav")
+        except:
+            filename = os.path.join(Path(__file__).parent.absolute(), "save_models", self.name_model+".sav")
+       
+        joblib.dump(model, filename)
 
 
 
@@ -188,14 +190,35 @@ class mlp(model):
                                   sample=sample,
                                   features=features)
         
-        self.model = MLPClassifier(hidden_layer_sizes=10,
+        self.name_model = "MLP"
+        self.model = MLPClassifier(hidden_layer_sizes=50,
                                    max_iter=100000,
                                    alpha=0)
         
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 class ensemble_mlp(model):
     
-    def __init__(self, nb_model=300):
+    def __init__(self, nb_model=20):
         
         self.models = []
         for i in range(nb_model):
