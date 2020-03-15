@@ -6,7 +6,7 @@ Created on Sun Dec 29 00:36:47 2019
 """
 import numpy as np
 import pandas as pd
-from utils import load_csv, one_hot_encode, dataframe_to_dict, tournament
+from .utils import load_csv, one_hot_encode, dataframe_to_dict, tournament
 
 
 class Database:
@@ -19,6 +19,9 @@ class Database:
                                       data_type="train")
         self.validation_data = load_csv(tournament=self.last_tournament,
                                         data_type="validation")
+        self.live_data = load_csv(tournament=self.last_tournament,
+                                        data_type="live")
+        
         self.__find_features_name__()
         self.__find_era__()
         self.__find_id__()
@@ -111,6 +114,14 @@ class Database:
         elif data_type=="validation":
             data = self.validation_data.drop(["id", "era", "data_type", "target_kazutsugi"], axis=1)
             y = self.validation_data.loc[:,self.validation_data.columns=="target_kazutsugi"]
+        elif data_type=='live':
+            data = self.live_data.drop(["id", "era", "data_type", "target_kazutsugi"], axis=1)
+            id_data = self.live_data['id']
+            if features=="all":
+                return data, id_data
+            else:
+                return data[:,data.columns.isin(features)], id_data
+        
         if features=="all":
             return data, y
         else:
@@ -124,4 +135,11 @@ class Database:
     def get_validation_data(self, features="all"):
         return self.__get_data__(features=features,
                                  data_type="validation")
+        
+    def get_live_data(self, features="all"):
+        return self.__get_data__(features=features,
+                                 data_type="live")
+    
+    def get_tournament_value(self):
+        return self.last_tournament
     

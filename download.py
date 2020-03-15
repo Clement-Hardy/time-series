@@ -51,7 +51,7 @@ if __name__ == '__main__':
     napi = numerapi.NumerAPI(verbosity="info")
     tournament = napi.get_current_round(8)
     
-    
+    zip_old_tournament(last_tournament=tournament)
     
     if not os.path.isdir(os.path.join("data", "numerai_dataset_{}".format(tournament))):
         napi.download_current_dataset(dest_path="data",

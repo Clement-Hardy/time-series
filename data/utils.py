@@ -11,10 +11,13 @@ import numpy as np
 
 
 def tournament():
-    path = Path('__file__').parent.absolute()
+    try:
+        path = Path(__file__).parent.absolute()
+    except:
+        path = Path('__file__').parent.absolute()
     tournaments = []
     for file in os.listdir(path):
-        if "numerai_dataset" in file:
+        if "numerai_dataset" in file and ".zip" not in file:
             tournaments.append(int(file.split('_')[-1]))
             
     return tournaments
@@ -28,8 +31,13 @@ def load_csv(tournament, data_type="train"):
         filename = "numerai_training_data.csv"
     elif data_type=="validation" or data_type=="live":
         filename = "numerai_tournament_data.csv"
+    
+    try:
+        path = Path(__file__).parent.absolute()
+    except:
+        path = Path('__file__').parent.absolute()
         
-    file = os.path.join(Path('__file__').parent.absolute(),
+    file = os.path.join(path,
                         "numerai_dataset_{}".format(tournament),
                         filename)
     

@@ -13,8 +13,9 @@ import sys
 import os
 import joblib
 from tqdm import tqdm
-sys.path.append("..//training")
-from metric import accuracy_sklearn
+
+sys.path.append("..")
+from training.metric import accuracy_sklearn
 
 
 
@@ -77,6 +78,8 @@ class model:
    
     def __set_features__(self, X):
         self.index_features = np.random.choice(np.arange(0, X.shape[1]), replace=False, size=8)
+        
+    def __set_samples__(self, X)    :
         self.index_samples = np.random.choice(np.arange(0, X.shape[0]), replace=False, size=3000)
         
         
@@ -90,6 +93,8 @@ class model:
         
     
     def __get_samples__(self, X, y):
+        if not hasattr(self, 'index_samples'):
+            self.__set_samples__(X=X)       
         if type(X)!=np.array:
             X = np.array(X)
         if type(y)!=np.array:
@@ -98,7 +103,7 @@ class model:
         return X[self.index_samples,:], y[self.index_samples] 
     
     
-    def fit(self, X_train, y_train, X_test=None, y_test=None):    
+    def fit(self, X_train, y_train, X_test=None, y_test=None):
         y_train = y_train*4
         if self.features:
             X_train = self.__get_features__(X=X_train)
@@ -110,13 +115,13 @@ class model:
                                                      y=y_train)
         
         self.model.fit(X_train, y_train*4)
-        
+        self.save_model() 
         if X_test is not None and y_test is not None:
             y_pred = self.predict(X=X_test)/4
             return accuracy_sklearn(output=y_pred,
                                     label=y_test)
-            
-            
+             
+        
         
     def predict_proba(self, X):
         if self.features:
@@ -127,7 +132,7 @@ class model:
     def predict(self, X):
         y = self.predict_proba(X=X)
         y = np.argmax(y, axis=1)
-        
+        y/=4
         return y
     
     
@@ -174,9 +179,9 @@ class model:
     
     def save_model(self):
         try:
-            filename = os.path.join(Path('__file__').parent.absolute(), "save_models", self.name_model+".sav")
-        except:
             filename = os.path.join(Path(__file__).parent.absolute(), "save_models", self.name_model+".sav")
+        except:
+            filename = os.path.join(Path('__file__').parent.absolute(), "save_models", self.name_model+".sav")
        
         joblib.dump(model, filename)
 
@@ -191,9 +196,32 @@ class mlp(model):
                                   features=features)
         
         self.name_model = "MLP"
-        self.model = MLPClassifier(hidden_layer_sizes=50,
-                                   max_iter=100000,
-                                   alpha=0)
+        self.model = MLPClassifier(hidden_layer_sizes=100,
+                                   max_iter=10000000,
+                                   alpha=0,
+                                   batch_size=2000)
+        
+        
+    
+    def fit(self, X_train, y_train, X_test=None, y_test=None): 
+        if type(X_train)!=np.array:
+            X_train = np.array(X_train)
+        if type(y_train)!=np.array:
+            y_train = np.array(y_train)
+        if X_test is not None and type(X_test)!=np.array:
+            X_test = np.array(X_test)
+        if y_test is not None and type(y_test)!=np.array:
+            y_test = np.array(y_test)
+        
+        y_train = np.squeeze(y_train)
+        if y_test is not None:
+            y_test = np.squeeze(y_test)
+            
+            
+        return super().fit(X_train=X_train,
+                        y_train=y_train,
+                        X_test=X_test,
+                        y_test=y_test)
         
 
 
